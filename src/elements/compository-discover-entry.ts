@@ -1,12 +1,16 @@
-import { html, LitElement, property, query } from 'lit-element';
+import { Constructor, html, LitElement, property, PropertyValues, query } from 'lit-element';
 import { discoverEntryDetails } from '../processes/discover';
 import { CompositoryScope } from './compository-scope';
 import { fetchRenderersForZome } from '../processes/fetch-renderers';
-import { membraneContext } from 'holochain-membrane-context';
+import { membraneContext } from '@holochain-open-dev/membrane-context';
 import { CompositoryService } from '../services/compository-service';
-import { AdminWebsocket } from '@holochain/conductor-api';
+import { AdminWebsocket, AppWebsocket, CellId } from '@holochain/conductor-api';
+import { CircularProgress } from 'scoped-material-components/mwc-circular-progress';
+import { ScopedElementsMixin as Scoped } from '@open-wc/scoped-elements';
 
-export class CompositoryDiscoverEntry extends membraneContext(LitElement) {
+export class CompositoryDiscoverEntry extends membraneContext(
+  Scoped(LitElement) as Constructor<LitElement>
+) {
   @property({ type: String })
   entryUri!: string;
 
@@ -16,10 +20,23 @@ export class CompositoryDiscoverEntry extends membraneContext(LitElement) {
   @query('#scope')
   _scope!: CompositoryScope;
 
-  async firstUpdated() {
+  static get scopedElements() {
+    return {
+      'mwc-circular-progress': CircularProgress,
+    };
+  }
+
+  updated(changed: PropertyValues) {
+    super.updated(changed);
+    if (changed.has('membraneContext') && this.membraneContext.appWebsocket) {
+      this.loadRenderers();
+    }
+  }
+
+  async loadRenderers() {
     const compositoryService = new CompositoryService(
-      this.appWebsocket,
-      this.cellId
+      this.membraneContext.appWebsocket as AppWebsocket,
+      this.membraneContext.cellId as CellId
     );
     const {
       cellId,
@@ -27,7 +44,7 @@ export class CompositoryDiscoverEntry extends membraneContext(LitElement) {
       entryDefIndex,
       entryHash,
     } = await discoverEntryDetails(
-      this.adminWebsocket as AdminWebsocket,
+      this.membraneContext.adminWebsocket as AdminWebsocket,
       compositoryService,
       this.entryUri
     );
@@ -42,7 +59,7 @@ export class CompositoryDiscoverEntry extends membraneContext(LitElement) {
       const entryIdStr = def.entry_defs[entryDefIndex];
       renderers.entry[entryIdStr].render(
         this._scope.shadowRoot as ShadowRoot,
-        this.appWebsocket,
+        this.membraneContext.appWebsocket as AppWebsocket,
         cellId,
         entryHash
       );

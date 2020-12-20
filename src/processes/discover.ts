@@ -2,9 +2,7 @@ import { AdminWebsocket, AppWebsocket, CellId } from '@holochain/conductor-api';
 import { CompositoryService } from '../services/compository-service';
 import { serializeHash, HolochainCoreTypes } from '@holochain-open-dev/common';
 import { installDna } from './install-dna';
-import { ScopedRenderers, SetupRenderers } from '../types/scoped-renderers';
-import { importModuleFromFile } from './import-module-from-file';
-import { EntryDefLocator, ZomeDef } from '../types/dnas';
+import { EntryDefLocator } from '../types/dnas';
 
 async function fetchZomeAndEntryIndexes(
   appWebsocket: AppWebsocket,
