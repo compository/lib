@@ -1,5 +1,5 @@
 import { serializeHash } from '@holochain-open-dev/common';
-import { bundle_dna } from 'bundle-dna';
+import { bundle_dna, DnaFile } from 'bundle-dna';
 import { CompositoryService } from '../services/compository-service';
 import { ZomeDef } from '../types/dnas';
 
@@ -8,7 +8,7 @@ export async function generateDna(
   dnaTemplateHash: string,
   uuid: string,
   properties: any
-): Promise<any> {
+): Promise<DnaFile> {
   // Get the dna template
   const dnaTemplate = await compositoryService.getDnaTemplate(dnaTemplateHash);
 
@@ -41,7 +41,7 @@ export async function generateDna(
     properties,
     uuid,
   });
-  debugger;
+
   return dnaFile;
   // Return the contents
   /* return new File([new Uint8Array([]).buffer], 'generated.dna.gz', {

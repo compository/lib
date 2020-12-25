@@ -21,7 +21,6 @@ export async function generateDna(compositoryService, dnaTemplateHash, uuid, pro
         properties,
         uuid,
     });
-    debugger;
     return dnaFile;
     // Return the contents
     /* return new File([new Uint8Array([]).buffer], 'generated.dna.gz', {
