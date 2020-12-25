@@ -9,7 +9,7 @@ export async function generateDna(
   dnaTemplateHash: string,
   uuid: string,
   properties: any
-): Promise<File> {
+): Promise<any> {
   await init(wasmUrl);
 
   // Get the dna template
@@ -30,7 +30,7 @@ export async function generateDna(
   const codes = await Promise.all(codesPromises);
 
   // Bundle the dna
-  const { bundled_dna_file, dna_hash } = await bundle_dna(
+  const dnaFile = await bundle_dna(
     dnaTemplate.name,
     uuid,
     properties,
@@ -40,15 +40,16 @@ export async function generateDna(
 
   await compositoryService.publishInstantiatedDna({
     dna_template_hash: dnaTemplateHash,
-    instantiated_dna_hash: serializeHash(new Uint8Array(dna_hash)),
+    instantiated_dna_hash: serializeHash(new Uint8Array(dnaFile.dna.hash)),
     properties,
     uuid,
   });
-
+  debugger;
+  return dnaFile;
   // Return the contents
-  return new File([new Uint8Array(bundled_dna_file).buffer], 'generated.dna.gz', {
+  /* return new File([new Uint8Array([]).buffer], 'generated.dna.gz', {
     type: 'application/octet-stream',
-  });
+  }); */
 }
 
 async function fetchZome(

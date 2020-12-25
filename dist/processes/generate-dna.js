@@ -15,17 +15,19 @@ export async function generateDna(wasmUrl, compositoryService, dnaTemplateHash, 
     const codesPromises = zomes.map(zome => zome.file.arrayBuffer());
     const codes = await Promise.all(codesPromises);
     // Bundle the dna
-    const { bundled_dna_file, dna_hash } = await bundle_dna(dnaTemplate.name, uuid, properties, argZomes, codes.map(code => ({ code: Array.from(new Uint8Array(code)) })));
+    const dnaFile = await bundle_dna(dnaTemplate.name, uuid, properties, argZomes, codes.map(code => ({ code: Array.from(new Uint8Array(code)) })));
     await compositoryService.publishInstantiatedDna({
         dna_template_hash: dnaTemplateHash,
-        instantiated_dna_hash: serializeHash(new Uint8Array(dna_hash)),
+        instantiated_dna_hash: serializeHash(new Uint8Array(dnaFile.dna.hash)),
         properties,
         uuid,
     });
+    debugger;
+    return dnaFile;
     // Return the contents
-    return new File([new Uint8Array(bundled_dna_file).buffer], 'generated.dna.gz', {
-        type: 'application/octet-stream',
-    });
+    /* return new File([new Uint8Array([]).buffer], 'generated.dna.gz', {
+      type: 'application/octet-stream',
+    }); */
 }
 async function fetchZome(compositoryService, zomeDefHash) {
     const zomeDef = await compositoryService.getZomeDef(zomeDefHash);
