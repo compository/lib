@@ -1,5 +1,5 @@
 import { serializeHash } from '@holochain-open-dev/common';
-import { bundle_dna } from 'bundle_dna';
+import { bundle_dna } from 'bundle-dna';
 export async function generateDna(compositoryService, dnaTemplateHash, uuid, properties) {
     // Get the dna template
     const dnaTemplate = await compositoryService.getDnaTemplate(dnaTemplateHash);

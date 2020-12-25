@@ -1,5 +1,5 @@
 import { serializeHash } from '@holochain-open-dev/common';
-import { bundle_dna } from 'bundle_dna';
+import { bundle_dna } from 'bundle-dna';
 import { CompositoryService } from '../services/compository-service';
 import { ZomeDef } from '../types/dnas';
 
