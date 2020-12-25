@@ -9,6 +9,9 @@ import { AdminWebsocket } from '@holochain/conductor-api';
 export class CompositoryInstallDnaDialog extends membraneContext(
   Scoped(LitElement) as Constructor<LitElement>
 ) {
+  @property({ type: Object })
+  dnaFile!: any;
+
   @query('#dialog')
   _dialog!: Dialog;
 
@@ -30,9 +33,12 @@ export class CompositoryInstallDnaDialog extends membraneContext(
     const adminWs = this.membraneContext.adminWebsocket as AdminWebsocket;
     const agentKey = await adminWs.generateAgentPubKey();
     const installed_app_id = `generated-app-${Date.now() % 1000}`;
+    const dnaProps = this.dnaFile
+      ? { nick: '', file: this.dnaFile }
+      : { nick: '', path: this._dnaPath };
     const result = await adminWs.installApp({
       agent_key: agentKey,
-      dnas: [{ nick: '', path: this._dnaPath }],
+      dnas: [dnaProps as any],
       installed_app_id,
     });
     await adminWs.activateApp({ installed_app_id });
@@ -50,17 +56,21 @@ export class CompositoryInstallDnaDialog extends membraneContext(
   render() {
     return html`
       <mwc-dialog id="dialog" heading="Install new DNA">
-        <mwc-textfield
-          id="dna-path"
-          placeholder="Dna.gz path"
-          required
-          @input=${(e: any) => (this._dnaPath = e.target.value)}
-        >
-        </mwc-textfield>
+        ${this.dnaFile
+          ? html``
+          : html`
+              <mwc-textfield
+                id="dna-path"
+                placeholder="Dna.gz path"
+                required
+                @input=${(e: any) => (this._dnaPath = e.target.value)}
+              >
+              </mwc-textfield>
+            `}
 
         <mwc-button
           slot="primaryAction"
-          .disabled=${!this._dnaPath}
+          .disabled=${!this._dnaPath && !this.dnaFile}
           @click=${() => this.installDna()}
         >
           Install
