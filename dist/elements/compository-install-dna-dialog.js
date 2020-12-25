@@ -20,9 +20,12 @@ export class CompositoryInstallDnaDialog extends membraneContext(Scoped(LitEleme
         const adminWs = this.membraneContext.adminWebsocket;
         const agentKey = await adminWs.generateAgentPubKey();
         const installed_app_id = `generated-app-${Date.now() % 1000}`;
+        const dnaProps = this.dnaFile
+            ? { nick: '', file: this.dnaFile }
+            : { nick: '', path: this._dnaPath };
         const result = await adminWs.installApp({
             agent_key: agentKey,
-            dnas: [{ nick: '', path: this._dnaPath }],
+            dnas: [dnaProps],
             installed_app_id,
         });
         await adminWs.activateApp({ installed_app_id });
@@ -36,17 +39,21 @@ export class CompositoryInstallDnaDialog extends membraneContext(Scoped(LitEleme
     render() {
         return html `
       <mwc-dialog id="dialog" heading="Install new DNA">
-        <mwc-textfield
-          id="dna-path"
-          placeholder="Dna.gz path"
-          required
-          @input=${(e) => (this._dnaPath = e.target.value)}
-        >
-        </mwc-textfield>
+        ${this.dnaFile
+            ? html ``
+            : html `
+              <mwc-textfield
+                id="dna-path"
+                placeholder="Dna.gz path"
+                required
+                @input=${(e) => (this._dnaPath = e.target.value)}
+              >
+              </mwc-textfield>
+            `}
 
         <mwc-button
           slot="primaryAction"
-          .disabled=${!this._dnaPath}
+          .disabled=${!this._dnaPath && !this.dnaFile}
           @click=${() => this.installDna()}
         >
           Install
@@ -58,6 +65,9 @@ export class CompositoryInstallDnaDialog extends membraneContext(Scoped(LitEleme
     `;
     }
 }
+__decorate([
+    property({ type: Object })
+], CompositoryInstallDnaDialog.prototype, "dnaFile", void 0);
 __decorate([
     query('#dialog')
 ], CompositoryInstallDnaDialog.prototype, "_dialog", void 0);

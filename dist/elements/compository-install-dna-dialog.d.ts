@@ -6,6 +6,7 @@ declare const CompositoryInstallDnaDialog_base: Constructor<LitElement> & Constr
     membraneContext: import("@holochain-open-dev/membrane-context").MembraneContext;
 }>;
 export declare class CompositoryInstallDnaDialog extends CompositoryInstallDnaDialog_base {
+    dnaFile: any;
     _dialog: Dialog;
     _dnaPath: string;
     static get scopedElements(): {

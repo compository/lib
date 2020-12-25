@@ -1,7 +1,6 @@
 import { serializeHash } from '@holochain-open-dev/common';
-import init, { bundle_dna } from 'bundle_dna';
-export async function generateDna(wasmUrl, compositoryService, dnaTemplateHash, uuid, properties) {
-    await init(wasmUrl);
+import { bundle_dna } from 'bundle_dna';
+export async function generateDna(compositoryService, dnaTemplateHash, uuid, properties) {
     // Get the dna template
     const dnaTemplate = await compositoryService.getDnaTemplate(dnaTemplateHash);
     // Fetch all zomes for that template
