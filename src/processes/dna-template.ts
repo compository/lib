@@ -4,6 +4,7 @@ import { DnaTemplate, Hashed, ZomeDef, ZomeDefReference } from '../types/dnas';
 // For now, we assume that properties and uuid is empty
 export async function createDnaTemplate(
   compositoryService: CompositoryService,
+  dnaTemplateName: string,
   zomeDefs: Array<Hashed<ZomeDef>>
 ): Promise<string> {
   const zomeDefReferences: Array<ZomeDefReference> = zomeDefs.map(def => ({
@@ -11,7 +12,7 @@ export async function createDnaTemplate(
     zome_def_hash: def.hash,
   }));
   const dnaTemplate: DnaTemplate = {
-    name: 'adf',
+    name: dnaTemplateName,
     zome_defs: zomeDefReferences,
   };
 
