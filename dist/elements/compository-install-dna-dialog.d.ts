@@ -10,13 +10,14 @@ export declare class CompositoryInstallDnaDialog extends CompositoryInstallDnaDi
     dnaFile: DnaFile;
     _dialog: Dialog;
     _dnaPath: string;
+    open(opened?: boolean): void;
+    installDna(): Promise<void>;
+    render(): import("lit-element").TemplateResult;
     static get scopedElements(): {
         'mwc-dialog': typeof Dialog;
         'mwc-button': typeof Button;
         'mwc-textfield': typeof TextField;
     };
-    open(opened?: boolean): void;
-    installDna(): Promise<void>;
-    render(): import("lit-element").TemplateResult;
+    static get styles(): import("lit-element").CSSResult;
 }
 export {};

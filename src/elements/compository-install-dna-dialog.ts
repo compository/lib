@@ -6,6 +6,7 @@ import { membraneContext } from '@holochain-open-dev/membrane-context';
 import { ScopedElementsMixin as Scoped } from '@open-wc/scoped-elements';
 import { AdminWebsocket } from '@holochain/conductor-api';
 import { DnaFile } from 'bundle-dna';
+import { sharedStyles } from './sharedStyles';
 
 export class CompositoryInstallDnaDialog extends membraneContext(
   Scoped(LitElement) as Constructor<LitElement>
@@ -19,13 +20,6 @@ export class CompositoryInstallDnaDialog extends membraneContext(
   @property({ type: String })
   _dnaPath!: string;
 
-  static get scopedElements() {
-    return {
-      'mwc-dialog': Dialog,
-      'mwc-button': Button,
-      'mwc-textfield': TextField,
-    };
-  }
   open(opened = true) {
     this._dialog.open = opened;
   }
@@ -62,7 +56,7 @@ export class CompositoryInstallDnaDialog extends membraneContext(
               <div class="column">
                 <span>Name: ${this.dnaFile.dna.content.name}</span>
                 <span>Hash: ${this.dnaFile.dna.hash}</span>
-                <span style="margin-bottom: 8px;">Are you sure?</span>
+                <span style="margin-top: 8px;">Are you sure you want to install this DNA?</span>
               </div>
             `
           : html`
@@ -87,5 +81,17 @@ export class CompositoryInstallDnaDialog extends membraneContext(
         </mwc-button>
       </mwc-dialog>
     `;
+  }
+
+  static get scopedElements() {
+    return {
+      'mwc-dialog': Dialog,
+      'mwc-button': Button,
+      'mwc-textfield': TextField,
+    };
+  }
+
+  static get styles() {
+    return sharedStyles;
   }
 }
