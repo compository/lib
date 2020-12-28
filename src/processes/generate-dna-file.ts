@@ -1,17 +1,13 @@
-import { serializeHash } from '@holochain-open-dev/common';
 import { bundle_dna, DnaFile } from 'bundle-dna';
 import { CompositoryService } from '../services/compository-service';
-import { ZomeDef } from '../types/dnas';
+import { DnaTemplate, ZomeDef, ZomeDefReference } from '../types/dnas';
 
-export async function generateDna(
+export async function generateDnaFile(
   compositoryService: CompositoryService,
-  dnaTemplateHash: string,
+  dnaTemplate: DnaTemplate,
   uuid: string,
   properties: any
 ): Promise<DnaFile> {
-  // Get the dna template
-  const dnaTemplate = await compositoryService.getDnaTemplate(dnaTemplateHash);
-
   // Fetch all zomes for that template
   const promises = dnaTemplate.zome_defs.map(async zome_def =>
     fetchZome(compositoryService, zome_def.zome_def_hash)
@@ -35,18 +31,7 @@ export async function generateDna(
     codes.map(code => ({ code: Array.from(new Uint8Array(code)) }))
   );
 
-  await compositoryService.publishInstantiatedDna({
-    dna_template_hash: dnaTemplateHash,
-    instantiated_dna_hash: serializeHash(new Uint8Array(dnaFile.dna.hash)),
-    properties,
-    uuid,
-  });
-
   return dnaFile;
-  // Return the contents
-  /* return new File([new Uint8Array([]).buffer], 'generated.dna.gz', {
-    type: 'application/octet-stream',
-  }); */
 }
 
 async function fetchZome(

@@ -5,12 +5,13 @@ import { TextField } from 'scoped-material-components/mwc-textfield';
 import { membraneContext } from '@holochain-open-dev/membrane-context';
 import { ScopedElementsMixin as Scoped } from '@open-wc/scoped-elements';
 import { AdminWebsocket } from '@holochain/conductor-api';
+import { DnaFile } from 'bundle-dna';
 
 export class CompositoryInstallDnaDialog extends membraneContext(
   Scoped(LitElement) as Constructor<LitElement>
 ) {
   @property({ type: Object })
-  dnaFile!: any;
+  dnaFile!: DnaFile;
 
   @query('#dialog')
   _dialog!: Dialog;
@@ -57,7 +58,13 @@ export class CompositoryInstallDnaDialog extends membraneContext(
     return html`
       <mwc-dialog id="dialog" heading="Install new DNA">
         ${this.dnaFile
-          ? html``
+          ? html`
+              <div class="column">
+                <span>Name: ${this.dnaFile.dna.content.name}</span>
+                <span>Hash: ${this.dnaFile.dna.hash}</span>
+                <span style="margin-bottom: 8px;">Are you sure?</span>
+              </div>
+            `
           : html`
               <mwc-textfield
                 id="dna-path"
