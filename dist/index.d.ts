@@ -7,4 +7,4 @@ export * from './types/dnas';
 export * from './processes/discover';
 export * from './processes/download-file';
 export * from './processes/fetch-lenses';
-export * from './processes/generate-dna';
+export * from './processes/generate-dna-file';
