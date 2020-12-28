@@ -2,11 +2,12 @@ import { Constructor, LitElement } from 'lit-element';
 import { Dialog } from 'scoped-material-components/mwc-dialog';
 import { Button } from 'scoped-material-components/mwc-button';
 import { TextField } from 'scoped-material-components/mwc-textfield';
+import { DnaFile } from 'bundle-dna';
 declare const CompositoryInstallDnaDialog_base: Constructor<LitElement> & Constructor<{
     membraneContext: import("@holochain-open-dev/membrane-context").MembraneContext;
 }>;
 export declare class CompositoryInstallDnaDialog extends CompositoryInstallDnaDialog_base {
-    dnaFile: any;
+    dnaFile: DnaFile;
     _dialog: Dialog;
     _dnaPath: string;
     static get scopedElements(): {

@@ -40,7 +40,13 @@ export class CompositoryInstallDnaDialog extends membraneContext(Scoped(LitEleme
         return html `
       <mwc-dialog id="dialog" heading="Install new DNA">
         ${this.dnaFile
-            ? html ``
+            ? html `
+              <div class="column">
+                <span>Name: ${this.dnaFile.dna.content.name}</span>
+                <span>Hash: ${this.dnaFile.dna.hash}</span>
+                <span style="margin-bottom: 8px;">Are you sure?</span>
+              </div>
+            `
             : html `
               <mwc-textfield
                 id="dna-path"
