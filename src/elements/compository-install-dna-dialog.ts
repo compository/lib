@@ -7,6 +7,7 @@ import { ScopedElementsMixin as Scoped } from '@open-wc/scoped-elements';
 import { AdminWebsocket } from '@holochain/conductor-api';
 import { DnaFile } from 'bundle-dna';
 import { sharedStyles } from './sharedStyles';
+import { serializeHash } from '@holochain-open-dev/common';
 
 export class CompositoryInstallDnaDialog extends membraneContext(
   Scoped(LitElement) as Constructor<LitElement>
@@ -55,8 +56,13 @@ export class CompositoryInstallDnaDialog extends membraneContext(
           ? html`
               <div class="column">
                 <span>Name: ${this.dnaFile.dna.content.name}</span>
-                <span>Hash: ${this.dnaFile.dna.hash}</span>
-                <span style="margin-top: 8px;">Are you sure you want to install this DNA?</span>
+                <span
+                  >Hash:
+                  ${serializeHash(new Uint8Array(this.dnaFile.dna.hash))}</span
+                >
+                <span style="margin-top: 8px;"
+                  >Are you sure you want to install this DNA?</span
+                >
               </div>
             `
           : html`

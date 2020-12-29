@@ -6,6 +6,7 @@ import { TextField } from 'scoped-material-components/mwc-textfield';
 import { membraneContext } from '@holochain-open-dev/membrane-context';
 import { ScopedElementsMixin as Scoped } from '@open-wc/scoped-elements';
 import { sharedStyles } from './sharedStyles';
+import { serializeHash } from '@holochain-open-dev/common';
 export class CompositoryInstallDnaDialog extends membraneContext(Scoped(LitElement)) {
     open(opened = true) {
         this._dialog.open = opened;
@@ -37,8 +38,13 @@ export class CompositoryInstallDnaDialog extends membraneContext(Scoped(LitEleme
             ? html `
               <div class="column">
                 <span>Name: ${this.dnaFile.dna.content.name}</span>
-                <span>Hash: ${this.dnaFile.dna.hash}</span>
-                <span style="margin-top: 8px;">Are you sure you want to install this DNA?</span>
+                <span
+                  >Hash:
+                  ${serializeHash(new Uint8Array(this.dnaFile.dna.hash))}</span
+                >
+                <span style="margin-top: 8px;"
+                  >Are you sure you want to install this DNA?</span
+                >
               </div>
             `
             : html `
