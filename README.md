@@ -18,32 +18,30 @@ npm i https://github.com/compository/lib#build
 import { Lenses } from '@compository/lib';
 import { AppWebsocket, CellId } from '@holochain/conductor-api';
 
-const renderers: Lenses = {
-  standalone: [
-    {
-      name: 'My Events Calendar',
-      render(root: ShadowRoot, appWebsocket: AppWebsocket, cellId: CellId) {
-        root.innerHTML = `<span>My sample calendar!</span>`;
+export default function lenses(
+  appWebsocket: AppWebsocket,
+  cellId: CellId
+): Lenses {
+  return {
+    standalone: [
+      {
+        name: 'My Events Calendar',
+        render(root: ShadowRoot) {
+          root.innerHTML = `<span>My sample calendar!</span>`;
+        },
+      },
+    ],
+    entryLenses: {
+      calendar_event: {
+        name: 'Calendar Event',
+        render: (root: ShadowRoot, entryHash: string) => {
+          root.innerHTML = `<span>This is the calendar event with hash ${entryHash}</span>`;
+        },
       },
     },
-  ],
-  entryLenses: {
-    calendar_event: {
-      name: 'Calendar Event',
-      render: (
-        root: ShadowRoot,
-        appWebsocket: AppWebsocket,
-        cellId: CellId,
-        entryHash: string
-      ) => {
-        root.innerHTML = `<span>This is the calendar event with hash ${entryHash}</span>`;
-      },
-    },
-  },
-  attachmentsLenses: [],
-};
-
-export default renderers;
+    attachmentsLenses: [],
+  };
+}
 ```
 
 3. Bundle your UI file with a bundler (eg rollup, webpack) with all the dependencies already compiled. Note that the UI bundle needs to be a standalone ES module interpretable directly by the browser.
