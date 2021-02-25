@@ -1,4 +1,4 @@
-import { serializeHash } from '@holochain-open-dev/common';
+import { serializeHash } from '@holochain-open-dev/core-types';
 import { importModuleFromFile } from './import-module-from-file';
 export async function fetchLensesForZome(compositoryService, cellId, zomeIndex) {
     const dnaHash = serializeHash(cellId[0]);
