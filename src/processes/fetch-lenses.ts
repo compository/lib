@@ -1,4 +1,4 @@
-import { serializeHash } from '@holochain-open-dev/common';
+import { serializeHash } from '@holochain-open-dev/core-types';
 import { CellId } from '@holochain/conductor-api';
 import { CompositoryService } from '../services/compository-service';
 import { ZomeDef } from '../types/dnas';
