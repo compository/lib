@@ -1,18 +1,14 @@
-import { Constructor, html, LitElement, property, query } from 'lit-element';
+import { html, LitElement, property, query } from 'lit-element';
 import { Dialog } from 'scoped-material-components/mwc-dialog';
 import { Button } from 'scoped-material-components/mwc-button';
 import { TextField } from 'scoped-material-components/mwc-textfield';
-import { membraneContext } from '@holochain-open-dev/membrane-context';
-import { ScopedElementsMixin as Scoped } from '@open-wc/scoped-elements';
-import { AdminWebsocket, DnaFile } from '@holochain/conductor-api';
+import { AdminWebsocket, DnaBundle } from '@holochain/conductor-api';
 import { sharedStyles } from './sharedStyles';
-import { serializeHash } from '@holochain-open-dev/core-types';
+import { BaseCompositoryService } from './base';
 
-export class CompositoryInstallDnaDialog extends membraneContext(
-  Scoped(LitElement) as Constructor<LitElement>
-) {
+export abstract class InstallDnaDialog extends BaseCompositoryService {
   @property({ type: Object })
-  dnaFile!: DnaFile;
+  dnaBundle!: DnaBundle;
 
   @query('#dialog')
   _dialog!: Dialog;
@@ -25,12 +21,12 @@ export class CompositoryInstallDnaDialog extends membraneContext(
   }
 
   async installDna() {
-    const adminWs = this.membraneContext.adminWebsocket as AdminWebsocket;
+    const adminWs = this._compositoryService.adminWebsocket as AdminWebsocket;
     const agentKey = await adminWs.generateAgentPubKey();
     const installed_app_id = `generated-app-${Date.now() % 1000}`;
 
     const dnaHash = await adminWs.registerDna({
-      source: { dna_file: this.dnaFile },
+      bundle: this.dnaBundle,
     });
 
     const result = await adminWs.installApp({
@@ -45,9 +41,11 @@ export class CompositoryInstallDnaDialog extends membraneContext(
     });
     await adminWs.activateApp({ installed_app_id });
 
+    const cellId = Object.values(result.slots)[0].base_cell_id;
+
     this.dispatchEvent(
       new CustomEvent('dna-installed', {
-        detail: { cellId: result.cell_data[0][0] },
+        detail: { cellId },
         bubbles: true,
         composed: true,
       })
@@ -58,14 +56,10 @@ export class CompositoryInstallDnaDialog extends membraneContext(
   render() {
     return html`
       <mwc-dialog id="dialog" heading="Install new DNA">
-        ${this.dnaFile
+        ${this.dnaBundle
           ? html`
               <div class="column">
-                <span>Name: ${this.dnaFile.dna.content.name}</span>
-                <span
-                  >Hash:
-                  ${serializeHash(new Uint8Array(this.dnaFile.dna.hash))}</span
-                >
+                <span>Name: ${this.dnaBundle.manifest.name}</span>
                 <span style="margin-top: 8px;"
                   >Are you sure you want to install this DNA?</span
                 >
@@ -83,7 +77,7 @@ export class CompositoryInstallDnaDialog extends membraneContext(
 
         <mwc-button
           slot="primaryAction"
-          .disabled=${!this._dnaPath && !this.dnaFile}
+          .disabled=${!this._dnaPath && !this.dnaBundle}
           @click=${() => this.installDna()}
         >
           Install

@@ -1,14 +1,13 @@
-import { bundle_dna } from 'bundle-dna';
 import { CompositoryService } from '../services/compository-service';
-import { DnaTemplate, ZomeDef, ZomeDefReference } from '../types/dnas';
-import { DnaFile } from '@holochain/conductor-api';
+import { DnaTemplate, ZomeDef } from '../types/dnas';
+import { DnaBundle } from '@holochain/conductor-api';
 
-export async function generateDnaFile(
+export async function generateDnaBundle(
   compositoryService: CompositoryService,
   dnaTemplate: DnaTemplate,
   uuid: string,
   properties: any
-): Promise<DnaFile> {
+): Promise<DnaBundle> {
   // Fetch all zomes for that template
   const promises = dnaTemplate.zome_defs.map(async zome_def =>
     fetchZome(compositoryService, zome_def.zome_def_hash)
@@ -16,23 +15,33 @@ export async function generateDnaFile(
   const zomes = await Promise.all(promises);
 
   // Prepare the arguments
-  const argZomes = zomes.map(zome => [
-    zome.zomeDef.name,
-    { wasm_hash: Array.from(zome.zomeDef.wasm_hash) },
-  ]);
   const codesPromises = zomes.map(zome => zome.file.arrayBuffer());
   const codes = await Promise.all(codesPromises);
 
-  // Bundle the dna
-  const dnaFile = await bundle_dna(
-    dnaTemplate.name,
-    uuid,
-    properties,
-    argZomes,
-    codes.map(code => ({ code: Array.from(new Uint8Array(code)) }))
+  const resources = codes.reduce(
+    (acc, next, i) => ({
+      ...acc,
+      [zomes[i].zomeDef.name]: Array.from(new Uint8Array(next)),
+    }),
+    {}
   );
 
-  return dnaFile;
+  // Create bundle
+  const dnaBundle: DnaBundle = {
+    manifest: {
+      name: dnaTemplate.name,
+      uuid,
+      properties,
+      zomes: zomes.map(zome => ({
+        name: zome.zomeDef.name,
+        hash: zome.zomeDef.wasm_hash,
+        bundled: zome.zomeDef.name,
+      })) as any,
+    },
+    resources,
+  };
+
+  return dnaBundle;
 }
 
 async function fetchZome(
