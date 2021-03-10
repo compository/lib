@@ -83,27 +83,20 @@ export class PublishZome extends BaseElement {
             style="margin-bottom: 24px;"
           ></mwc-textfield>
 
-          <div class="row">
-            <div class="column" style="flex: 1;">
-              <span style="margin-bottom: 8px;">Zome Wasm File (required)</span>
-              <upload-files
-                one-file
-                accepted-files=".wasm"
-                @file-uploaded=${(e) => (this._zomeWasmHash = e.detail.hash)}
-              ></upload-files>
-            </div>
-            <span style="flex-basis: 24px;"></span>
-            <div class="column" style="flex: 1;">
-              <span style="margin-bottom: 8px; "
-                >UI Bundle File (optional)</span
-              >
-              <upload-files
-                one-file
-                accepted-files=".js"
-                @file-uploaded=${(e) => this.setUIBundleHash(e.detail.file, e.detail.hash)}
-              ></upload-files>
-            </div>
-          </div>
+          <span style="margin-bottom: 8px;">Zome Wasm File (required)</span>
+          <upload-files
+            one-file
+            accepted-files=".wasm"
+            @file-uploaded=${(e) => (this._zomeWasmHash = e.detail.hash)}
+          ></upload-files>
+          <span style="margin-bottom: 8px; margin-top: 24px;"
+            >UI Bundle File (optional)</span
+          >
+          <upload-files
+            one-file
+            accepted-files=".js"
+            @file-uploaded=${(e) => this.setUIBundleHash(e.detail.file, e.detail.hash)}
+          ></upload-files>
 
           <mwc-button
             style="margin-top: 24px;"
