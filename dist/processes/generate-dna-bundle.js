@@ -12,6 +12,7 @@ export async function generateDnaBundle(compositoryService, dnaTemplate, uuid, p
     // Create bundle
     const dnaBundle = {
         manifest: {
+            manifest_version: '1',
             name: dnaTemplate.name,
             uuid,
             properties,
