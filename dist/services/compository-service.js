@@ -1,4 +1,5 @@
 import { FileStorageService } from '@holochain-open-dev/file-storage';
+import * as msgpack from '@msgpack/msgpack';
 export class CompositoryService extends FileStorageService {
     constructor(adminWebsocket, appWebsocket, cellId) {
         super(appWebsocket, cellId, 'file_storage');
@@ -9,7 +10,7 @@ export class CompositoryService extends FileStorageService {
     /** Getters */
     async getTemplateForDna(dnaHash) {
         const result = await this.callZome('compository', 'get_template_for_dna', dnaHash);
-        // result.properties = msgpack.decode(result.properties);
+        result.properties = msgpack.decode(result.properties);
         return result;
     }
     async getZomeDef(zomeDefHash) {
@@ -32,6 +33,7 @@ export class CompositoryService extends FileStorageService {
         return this.callZome('compository', 'publish_dna_template', dnaTemplate);
     }
     async publishInstantiatedDna(input) {
+        input.properties = msgpack.encode(input.properties);
         return this.callZome('compository', 'publish_instantiated_dna', input);
     }
     callZome(zome, fnName, payload) {
