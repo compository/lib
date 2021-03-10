@@ -13,10 +13,11 @@ import { CircularProgress } from 'scoped-material-components/mwc-circular-progre
 import { List } from 'scoped-material-components/mwc-list';
 import { ListItem } from 'scoped-material-components/mwc-list-item';
 import { CompositoryService } from '../services/compository-service';
+import { BaseCompositoryService } from './base';
 
 import { sharedStyles } from './sharedStyles';
 
-export abstract class InstalledCells extends Scoped(LitElement) {
+export abstract class InstalledCells extends BaseCompositoryService {
   @property({ type: Array })
   _installedCellIds!: Array<CellId>;
 
@@ -25,8 +26,6 @@ export abstract class InstalledCells extends Scoped(LitElement) {
   firstUpdated() {
     this.loadCellsIds();
   }
-
-  abstract get _compositoryService(): CompositoryService;
 
   get compositoryDnaHash(): string {
     return serializeHash(this._compositoryService.cellId[0]);

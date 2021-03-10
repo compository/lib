@@ -1,13 +1,13 @@
 import { __decorate } from "tslib";
 import { serializeHash } from '@holochain-open-dev/core-types';
-import { ScopedElementsMixin as Scoped } from '@open-wc/scoped-elements';
-import { html, LitElement, property, } from 'lit-element';
+import { html, property, } from 'lit-element';
 import { Card } from 'scoped-material-components/mwc-card';
 import { CircularProgress } from 'scoped-material-components/mwc-circular-progress';
 import { List } from 'scoped-material-components/mwc-list';
 import { ListItem } from 'scoped-material-components/mwc-list-item';
+import { BaseCompositoryService } from './base';
 import { sharedStyles } from './sharedStyles';
-export class InstalledCells extends Scoped(LitElement) {
+export class InstalledCells extends BaseCompositoryService {
     constructor() {
         super(...arguments);
         this._dnaTemplateNames = {};
