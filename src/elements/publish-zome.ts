@@ -10,6 +10,8 @@ import { UploadFiles } from '@holochain-open-dev/file-storage';
 import { BaseElement } from '@holochain-open-dev/common';
 import { Card } from 'scoped-material-components/mwc-card';
 import { Button } from 'scoped-material-components/mwc-button';
+import { Snackbar } from 'scoped-material-components/mwc-snackbar';
+import { SetupLenses } from '../types/lenses';
 
 export abstract class PublishZome extends BaseElement {
   @query('#zome-name')
@@ -20,9 +22,16 @@ export abstract class PublishZome extends BaseElement {
   @property({ type: String })
   _zomeWasmHash: string | undefined = undefined;
   _uiBundleHash: string | undefined = undefined;
+  @property({ type: Boolean })
+  _invalidUiBundle = false;
 
   get publishDisabled() {
-    return !this._zomeWasmHash || !this._nameField || !this._nameField.value;
+    return (
+      !this._zomeWasmHash ||
+      !this._nameField ||
+      !this._nameField.value ||
+      this._invalidUiBundle
+    );
   }
 
   async publishZome() {
@@ -46,36 +55,83 @@ export abstract class PublishZome extends BaseElement {
     }
   }
 
+  async setUIBundleHash(file: File, hash: string) {
+    try {
+      const mod = await importModuleFromFile(file);
+      const setupLenses: SetupLenses = mod.default;
+
+      const lenses = setupLenses(
+        this._compositoryService.appWebsocket,
+        this._compositoryService.cellId
+      );
+
+      if (
+        !lenses.standalone ||
+        !lenses.entryLenses ||
+        !lenses.attachmentsLenses
+      ) {
+        throw new Error('Malformed lenses');
+      }
+
+      this._uiBundleHash = hash;
+      this._invalidUiBundle = false;
+    } catch (e) {
+      (this.shadowRoot?.getElementById('error-snackbar') as Snackbar).show();
+      this._invalidUiBundle = true;
+    }
+  }
+
+  renderErrorSnackbar() {
+    return html`
+      <mwc-snackbar id="error-snackbar" labelText="Invalid UI bundle">
+        <mwc-button
+          slot="action"
+          label="See Documentation"
+          @click=${() => window.open('https://github.com/compository/lib')}
+        ></mwc-button>
+      </mwc-snackbar>
+    `;
+  }
   render() {
     return html`
-      <mwc-card style="width: auto;">
+      ${this.renderErrorSnackbar()}
+      <mwc-card style="width: auto; flex: 1;">
         <div class="column" style="padding: 16px;">
           <span class="title" style="margin-bottom: 16px;">Publish Zome</span>
           <mwc-textfield
             id="zome-name"
-            label="Name"
+            label="Zome Name"
             required
             @input=${() => this.requestUpdate()}
-            style="margin-bottom: 16px;"
+            style="margin-bottom: 24px;"
           ></mwc-textfield>
-          <span style="margin-bottom: 8px;">Zome Wasm File</span>
-          <upload-files
-            one-file
-            accepted-files=".wasm"
-            @file-uploaded=${(e: CustomEvent) =>
-              (this._zomeWasmHash = e.detail.hash)}
-          ></upload-files>
-          <span style="margin-bottom: 8px; margin-top: 16px;"
-            >UI Bundle File</span
-          >
-          <upload-files
-            one-file
-            accepted-files=".js"
-            @file-uploaded=${(e: CustomEvent) =>
-              (this._zomeWasmHash = e.detail.hash)}
-          ></upload-files>
+
+          <div class="row">
+            <div class="column" style="flex: 1;">
+              <span style="margin-bottom: 8px;">Zome Wasm File (required)</span>
+              <upload-files
+                one-file
+                accepted-files=".wasm"
+                @file-uploaded=${(e: CustomEvent) =>
+                  (this._zomeWasmHash = e.detail.hash)}
+              ></upload-files>
+            </div>
+            <span style="flex-basis: 24px;"></span>
+            <div class="column" style="flex: 1;">
+              <span style="margin-bottom: 8px; "
+                >UI Bundle File (optional)</span
+              >
+              <upload-files
+                one-file
+                accepted-files=".js"
+                @file-uploaded=${(e: CustomEvent) =>
+                  this.setUIBundleHash(e.detail.file, e.detail.hash)}
+              ></upload-files>
+            </div>
+          </div>
+
           <mwc-button
-            style="margin-top: 16px;"
+            style="margin-top: 24px;"
             label="PUBLISH"
             raised
             @click=${() => this.publishZome()}
@@ -92,6 +148,7 @@ export abstract class PublishZome extends BaseElement {
       'mwc-textfield': TextField,
       'mwc-button': Button,
       'mwc-card': Card,
+      'mwc-snackbar': Snackbar,
       'upload-files': class extends UploadFiles {
         get _fileStorageService() {
           return compositoryService;
