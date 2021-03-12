@@ -29,6 +29,7 @@ export async function generateDnaBundle(
   // Create bundle
   const dnaBundle: DnaBundle = {
     manifest: {
+      manifest_version: '1',
       name: dnaTemplate.name,
       uuid,
       properties,
@@ -37,7 +38,7 @@ export async function generateDnaBundle(
         hash: zome.zomeDef.wasm_hash,
         bundled: zome.zomeDef.name,
       })) as any,
-    },
+    } as any,
     resources,
   };
 

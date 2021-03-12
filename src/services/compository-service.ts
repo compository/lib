@@ -6,6 +6,7 @@ import {
   ZomeDef,
 } from '../types/dnas';
 import { HoloHashed } from '@holochain-open-dev/core-types';
+import * as msgpack from '@msgpack/msgpack';
 
 export interface GetTemplateForDnaOutput {
   dnaTemplate: DnaTemplate;
@@ -30,7 +31,7 @@ export class CompositoryService extends FileStorageService {
       'get_template_for_dna',
       dnaHash
     );
-    // result.properties = msgpack.decode(result.properties);
+    result.properties = msgpack.decode(result.properties);
     return result;
   }
 
@@ -60,6 +61,7 @@ export class CompositoryService extends FileStorageService {
   async publishInstantiatedDna(
     input: PublishInstantiatedDnaInput
   ): Promise<string> {
+    input.properties = msgpack.encode(input.properties);
     return this.callZome('compository', 'publish_instantiated_dna', input);
   }
 
