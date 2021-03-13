@@ -148,9 +148,9 @@ export abstract class ComposeZomes extends BaseCompositoryService {
             ${this.zomeDefs.map(
               zomeDef => html`
                 <mwc-check-list-item
-                  .selected=${zomeDef.content.name === 'blocky' ||
+                  .selected=${zomeDef.content.name === 'grapes' ||
                   zomeDef.content.name === 'profiles'}
-                  .disabled=${zomeDef.content.name === 'blocky' ||
+                  .disabled=${zomeDef.content.name === 'grapes' ||
                   zomeDef.content.name === 'profiles'}
                 >
                   ${zomeDef.content.name}
