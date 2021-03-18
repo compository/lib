@@ -1,9 +1,19 @@
 export async function generateDnaBundle(compositoryService, dnaTemplate, uuid, properties) {
     // Fetch all zomes for that template
-    const promises = dnaTemplate.zome_defs.map(async (zome_def) => fetchZome(compositoryService, zome_def.zome_def_hash));
-    const zomes = await Promise.all(promises);
+    const promises = dnaTemplate.zome_defs.map(async (zome_def) => {
+        try {
+            return fetchZome(compositoryService, zome_def.zome_def_hash);
+        }
+        catch (e) {
+            // TODO: if we get an error, it means that the Files have not yet gossiped.
+            // Remove this when sharding is implemented
+            return undefined;
+        }
+    });
+    const maybeZomes = await Promise.all(promises);
+    const zomes = maybeZomes.filter(z => !!z);
     // Prepare the arguments
-    const codesPromises = zomes.map(zome => zome.file.arrayBuffer());
+    const codesPromises = zomes.map((zome) => zome.file.arrayBuffer());
     const codes = await Promise.all(codesPromises);
     const resources = codes.reduce((acc, next, i) => ({
         ...acc,
