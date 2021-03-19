@@ -37,14 +37,20 @@ export abstract class DiscoverDnas extends BaseCompositoryService {
       hash => !allInstalledDnaHashes.includes(hash)
     );
 
+    const templates: Array<[string, GetTemplateForDnaOutput]> = [];
+
     const promises = this._allInstantiatedDnasHashes.map(async hash => {
-      const template = await this._compositoryService.getTemplateForDna(hash);
-      return [hash, template] as [string, GetTemplateForDnaOutput];
+      try {
+        const template = await this._compositoryService.getTemplateForDna(hash);
+        templates.push([hash, template]);
+      } catch (e) {
+        // Link hasn't propagated yet: don't show that DNA in the list
+      }
     });
 
-    const templateArray = await Promise.all(promises);
+    await Promise.all(promises);
 
-    for (const [hash, template] of templateArray) {
+    for (const [hash, template] of templates) {
       this._dnaTemplates[hash] = template;
     }
 

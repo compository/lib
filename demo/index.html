@@ -9,6 +9,7 @@
     </style>
   </head>
   <body>
+    <discover-dnas> </discover-dnas>
     <compose-zomes> </compose-zomes>
     <publish-zome> </publish-zome>
 
@@ -17,6 +18,7 @@
         CompositoryService,
         CompositoryScope,
         ComposeZomes,
+        DiscoverDnas,
         PublishZome,
         connectService,
       } from '../dist';
@@ -25,7 +27,7 @@
 
       (async function () {
         const admin = await ConductorApi.AdminWebsocket.connect(
-          'ws://localhost:9000'
+          'ws://localhost:8889'
         );
         const app = await ConductorApi.AppWebsocket.connect(
           'ws://localhost:8888'
@@ -34,7 +36,7 @@
         const cellIds = await admin.listCellIds();
 
         const compositoryHash =
-          'uhC0kFz1Nk6gCq-V2VKMwGvQndD15l2vuzhOu7XSW701VP80F13Vp';
+          'uhC0kmRDhpGo-CQUvldcIigA4kMwuMpqA2viDKkYq-ENIuJg93O3j';
         const compositoryCellId = cellIds.find(
           cellId => serializeHash(cellId[0]) === compositoryHash
         );
@@ -48,6 +50,10 @@
         customElements.define(
           'publish-zome',
           connectService(PublishZome, service)
+        );
+        customElements.define(
+          'discover-dnas',
+          connectService(DiscoverDnas, service)
         );
       })();
     </script>
