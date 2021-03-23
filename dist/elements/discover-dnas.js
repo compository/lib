@@ -49,7 +49,7 @@ export class DiscoverDnas extends BaseCompositoryService {
         }
         try {
             const template = this._dnaTemplates[dnaHash];
-            const dnaBundle = await generateDnaBundle(this._compositoryService, template.dnaTemplate, template.properties, template.uuid);
+            const dnaBundle = await generateDnaBundle(this._compositoryService, template.dnaTemplate, template.uuid, template.properties);
             const dialog = (_a = this.shadowRoot) === null || _a === void 0 ? void 0 : _a.getElementById('install-dialog');
             dialog.dnaBundle = dnaBundle;
             dialog.open();

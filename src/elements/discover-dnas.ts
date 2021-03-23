@@ -71,8 +71,8 @@ export abstract class DiscoverDnas extends BaseCompositoryService {
       const dnaBundle = await generateDnaBundle(
         this._compositoryService,
         template.dnaTemplate,
-        template.properties,
-        template.uuid
+        template.uuid,
+        template.properties
       );
 
       const dialog: InstallDnaDialog = this.shadowRoot?.getElementById(
