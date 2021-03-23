@@ -27,8 +27,17 @@ export class InstalledCells extends BaseCompositoryService {
         this._installedCellIds = cellIds;
     }
     async fetchDnaTemplateNames(instantiatedDnaHashes) {
-        const promises = instantiatedDnaHashes.map(hash => this._compositoryService.getTemplateForDna(hash));
-        const templates = await Promise.all(promises);
+        const templates = [];
+        const promises = instantiatedDnaHashes.map(async (hash) => {
+            try {
+                const template = await this._compositoryService.getTemplateForDna(hash);
+                templates.push(template);
+            }
+            catch (e) {
+                // Do nothing
+            }
+        });
+        await Promise.all(promises);
         const names = {};
         for (let i = 0; i < templates.length; i++) {
             names[instantiatedDnaHashes[i]] = templates[i].dnaTemplate.name;

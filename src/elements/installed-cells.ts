@@ -12,7 +12,10 @@ import { Card } from 'scoped-material-components/mwc-card';
 import { CircularProgress } from 'scoped-material-components/mwc-circular-progress';
 import { List } from 'scoped-material-components/mwc-list';
 import { ListItem } from 'scoped-material-components/mwc-list-item';
-import { CompositoryService } from '../services/compository-service';
+import {
+  CompositoryService,
+  GetTemplateForDnaOutput,
+} from '../services/compository-service';
 import { BaseCompositoryService } from './base';
 
 import { sharedStyles } from './sharedStyles';
@@ -48,11 +51,17 @@ export abstract class InstalledCells extends BaseCompositoryService {
   async fetchDnaTemplateNames(
     instantiatedDnaHashes: string[]
   ): Promise<Dictionary<string>> {
-    const promises = instantiatedDnaHashes.map(hash =>
-      this._compositoryService.getTemplateForDna(hash)
-    );
+    const templates: Array<GetTemplateForDnaOutput> = [];
+    const promises = instantiatedDnaHashes.map(async hash => {
+      try {
+        const template = await this._compositoryService.getTemplateForDna(hash);
+        templates.push(template);
+      } catch (e) {
+        // Do nothing
+      }
+    });
 
-    const templates = await Promise.all(promises);
+    await Promise.all(promises);
     const names: Dictionary<string> = {};
     for (let i = 0; i < templates.length; i++) {
       names[instantiatedDnaHashes[i]] = templates[i].dnaTemplate.name;
