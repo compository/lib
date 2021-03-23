@@ -3,6 +3,7 @@ import { Button } from 'scoped-material-components/mwc-button';
 import { CheckListItem } from 'scoped-material-components/mwc-check-list-item';
 import { Snackbar } from 'scoped-material-components/mwc-snackbar';
 import { CircularProgress } from 'scoped-material-components/mwc-circular-progress';
+import { LinearProgress } from 'scoped-material-components/mwc-linear-progress';
 import { CellId } from '@holochain/conductor-api';
 import { TextField } from 'scoped-material-components/mwc-textfield';
 import { HoloHashed } from '@holochain-open-dev/core-types';
@@ -16,6 +17,7 @@ export declare abstract class ComposeZomes extends BaseCompositoryService {
     _dnaTemplateToClone: string | undefined;
     _selectedIndexes: Set<number>;
     _templateName: string | undefined;
+    _generatingBundle: boolean;
     static get styles(): import("lit-element").CSSResult[];
     firstUpdated(): void;
     loadZomes(): Promise<void>;
@@ -27,6 +29,7 @@ export declare abstract class ComposeZomes extends BaseCompositoryService {
         'mwc-list': typeof List;
         'mwc-check-list-item': typeof CheckListItem;
         'mwc-circular-progress': typeof CircularProgress;
+        'mwc-linear-progress': typeof LinearProgress;
         'mwc-button': typeof Button;
         'mwc-textfield': typeof TextField;
         'install-dna-dialog': {

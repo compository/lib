@@ -13,6 +13,7 @@ import { Button } from 'scoped-material-components/mwc-button';
 import { CheckListItem } from 'scoped-material-components/mwc-check-list-item';
 import { Snackbar } from 'scoped-material-components/mwc-snackbar';
 import { CircularProgress } from 'scoped-material-components/mwc-circular-progress';
+import { LinearProgress } from 'scoped-material-components/mwc-linear-progress';
 import { sharedStyles } from './sharedStyles';
 import { AppWebsocket, CellId } from '@holochain/conductor-api';
 import { TextField } from 'scoped-material-components/mwc-textfield';
@@ -41,6 +42,9 @@ export abstract class ComposeZomes extends BaseCompositoryService {
   _selectedIndexes: Set<number> = new Set();
   @property()
   _templateName: string | undefined = undefined;
+
+  @property({ type: Boolean })
+  _generatingBundle = false;
 
   static get styles() {
     return [
@@ -83,6 +87,7 @@ export abstract class ComposeZomes extends BaseCompositoryService {
       zome_defs: zomeDefReferences,
     };
     try {
+      this._generatingBundle = true;
       this._dnaTemplateToClone = await this._compositoryService.publishDnaTemplate(
         dnaTemplate
       );
@@ -96,6 +101,7 @@ export abstract class ComposeZomes extends BaseCompositoryService {
         uuid,
         properties
       );
+      this._generatingBundle = false;
 
       this._installDnaDialog.dnaBundle = dnaBundle;
       this._installDnaDialog.open();
@@ -109,7 +115,7 @@ export abstract class ComposeZomes extends BaseCompositoryService {
       await this._compositoryService.publishInstantiatedDna({
         dna_template_hash: this._dnaTemplateToClone,
         instantiated_dna_hash: serializeHash(cellId[0]),
-        properties: null, // TODO
+        properties: [], // TODO
         uuid: '',
       });
     }
@@ -176,6 +182,11 @@ export abstract class ComposeZomes extends BaseCompositoryService {
             ></mwc-button>
           </div>
         </div>
+            ${this._generatingBundle
+              ? html`
+                  <mwc-linear-progress indeterminate></mwc-linear-progress>
+                `
+              : html``}
       </mwc-card>`;
   }
 
@@ -185,6 +196,7 @@ export abstract class ComposeZomes extends BaseCompositoryService {
       'mwc-list': List,
       'mwc-check-list-item': CheckListItem,
       'mwc-circular-progress': CircularProgress,
+      'mwc-linear-progress': LinearProgress,
       'mwc-button': Button,
       'mwc-textfield': TextField,
       'install-dna-dialog': class extends InstallDnaDialog {
