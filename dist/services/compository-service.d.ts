@@ -14,6 +14,7 @@ export declare class CompositoryService extends FileStorageService {
     constructor(adminWebsocket: AdminWebsocket, appWebsocket: AppWebsocket, cellId: CellId);
     /** Getters */
     getTemplateForDna(dnaHash: string): Promise<GetTemplateForDnaOutput>;
+    uploadFile(file: File, onProgress?: undefined | ((percentatgeProgress: number, bytesSent: number) => void)): Promise<string>;
     getZomeDef(zomeDefHash: string): Promise<ZomeDef>;
     getDnaTemplate(dnaTemplateHash: string): Promise<DnaTemplate>;
     getAllZomeDefs(): Promise<Array<HoloHashed<ZomeDef>>>;

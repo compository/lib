@@ -55,6 +55,7 @@ export class DiscoverDnas extends BaseCompositoryService {
             dialog.open();
         }
         catch (e) {
+            console.warn(e);
             ((_b = this.shadowRoot) === null || _b === void 0 ? void 0 : _b.getElementById('error-snackbar')).show();
         }
     }
