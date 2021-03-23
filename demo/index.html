@@ -27,16 +27,16 @@
 
       (async function () {
         const admin = await ConductorApi.AdminWebsocket.connect(
-          'ws://localhost:8889'
+          'ws://localhost:22222'
         );
         const app = await ConductorApi.AppWebsocket.connect(
-          'ws://localhost:8888'
+          'ws://localhost:22223'
         );
 
         const cellIds = await admin.listCellIds();
 
         const compositoryHash =
-          'uhC0kmRDhpGo-CQUvldcIigA4kMwuMpqA2viDKkYq-ENIuJg93O3j';
+          'uhC0kKAzmC9d5TL59sseFlRKugw9wfBzXj_4e3oq5GJWOzVSW6jwL';
         const compositoryCellId = cellIds.find(
           cellId => serializeHash(cellId[0]) === compositoryHash
         );

@@ -34,6 +34,15 @@ export class CompositoryService extends FileStorageService {
     result.properties = msgpack.decode(result.properties);
     return result;
   }
+  
+  uploadFile(
+    file: File,
+    onProgress?:
+      | undefined
+      | ((percentatgeProgress: number, bytesSent: number) => void)
+  ): Promise<string> {
+    return super.uploadFile(file, onProgress, 10 * 1024 * 1024);
+  }
 
   async getZomeDef(zomeDefHash: string): Promise<ZomeDef> {
     return this.callZome('compository', 'get_zome_def', zomeDefHash);

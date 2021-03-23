@@ -81,6 +81,7 @@ export abstract class DiscoverDnas extends BaseCompositoryService {
       dialog.dnaBundle = dnaBundle;
       dialog.open();
     } catch (e) {
+      console.warn(e);
       (this.shadowRoot?.getElementById('error-snackbar') as Snackbar).show();
     }
   }
