@@ -9,9 +9,11 @@
     </style>
   </head>
   <body>
-    <discover-dnas style="height: 300px;"> </discover-dnas>
-    <compose-zomes> </compose-zomes>
-    <publish-zome> </publish-zome>
+    <context-provider id="provider">
+      <discover-dnas style="height: 300px"> </discover-dnas>
+      <compose-zomes> </compose-zomes>
+      <publish-zome> </publish-zome>
+    </context-provider>
 
     <script type="module">
       import {
@@ -20,10 +22,11 @@
         ComposeZomes,
         DiscoverDnas,
         PublishZome,
-        connectService,
+        COMPOSITORY_SERVICE_CONTEXT,
       } from '../dist';
       import ConductorApi from '@holochain/conductor-api';
       import { serializeHash } from '@holochain-open-dev/core-types';
+      import { ContextProviderElement } from '@holochain-open-dev/context';
 
       (async function () {
         const admin = await ConductorApi.AdminWebsocket.connect(
@@ -43,18 +46,15 @@
 
         const service = new CompositoryService(admin, app, compositoryCellId);
 
-        customElements.define(
-          'compose-zomes',
-          connectService(ComposeZomes, service)
-        );
-        customElements.define(
-          'publish-zome',
-          connectService(PublishZome, service)
-        );
-        customElements.define(
-          'discover-dnas',
-          connectService(DiscoverDnas, service)
-        );
+        customElements.define('context-provider', ContextProviderElement);
+
+        const provider = document.getElementById('provider');
+        provider.name = COMPOSITORY_SERVICE_CONTEXT;
+        provider.value = service;
+
+        customElements.define('compose-zomes', ComposeZomes);
+        customElements.define('publish-zome', PublishZome);
+        customElements.define('discover-dnas', DiscoverDnas);
       })();
     </script>
   </body>

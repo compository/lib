@@ -1,28 +1,31 @@
-import { html, LitElement, property, PropertyValues, query } from 'lit-element';
-import { CompositoryScope } from './compository-scope';
-import { CompositoryService } from '../services/compository-service';
-import { CircularProgress } from 'scoped-material-components/mwc-circular-progress';
-import { ScopedElementsMixin as Scoped } from '@open-wc/scoped-elements';
-import { importModuleFromFile } from '../processes/import-module-from-file';
-import { sharedStyles } from './sharedStyles';
+import { css, html, LitElement } from 'lit';
+import { property, query, state } from 'lit/decorators.js';
+import { ScopedRegistryHost } from '@lit-labs/scoped-registry-mixin';
+import { requestContext } from '@holochain-open-dev/context';
+
 import { TextField } from 'scoped-material-components/mwc-textfield';
 import { UploadFiles } from '@holochain-open-dev/file-storage';
-import { BaseElement } from '@holochain-open-dev/common';
 import { Card } from 'scoped-material-components/mwc-card';
 import { Button } from 'scoped-material-components/mwc-button';
 import { Snackbar } from 'scoped-material-components/mwc-snackbar';
-import { SetupLenses } from '../types/lenses';
 
-export abstract class PublishZome extends BaseElement {
+import { CompositoryService } from '../services/compository-service';
+import { importModuleFromFile } from '../processes/import-module-from-file';
+import { sharedStyles } from './sharedStyles';
+import { SetupLenses } from '../types/lenses';
+import { COMPOSITORY_SERVICE_CONTEXT } from '../types/context';
+
+export class PublishZome extends ScopedRegistryHost(LitElement) {
+  @requestContext(COMPOSITORY_SERVICE_CONTEXT)
+  _compositoryService!: CompositoryService;
+
   @query('#zome-name')
   _nameField!: TextField;
 
-  abstract get _compositoryService(): CompositoryService;
-
-  @property({ type: String })
+  @state()
   _zomeWasmHash: string | undefined = undefined;
   _uiBundleHash: string | undefined = undefined;
-  @property({ type: Boolean })
+  @state()
   _invalidUiBundle = false;
 
   get publishDisabled() {
@@ -135,20 +138,13 @@ export abstract class PublishZome extends BaseElement {
     `;
   }
 
-  getScopedElements() {
-    const compositoryService = this._compositoryService;
-    return {
-      'mwc-textfield': TextField,
-      'mwc-button': Button,
-      'mwc-card': Card,
-      'mwc-snackbar': Snackbar,
-      'upload-files': class extends UploadFiles {
-        get _fileStorageService() {
-          return compositoryService;
-        }
-      } as any,
-    };
-  }
+  static elementDefinitions = {
+    'mwc-textfield': TextField,
+    'mwc-button': Button,
+    'mwc-card': Card,
+    'mwc-snackbar': Snackbar,
+    'upload-files': UploadFiles,
+  };
 
   static get styles() {
     return sharedStyles;

@@ -1,19 +1,27 @@
-import { html, LitElement, property, query } from 'lit-element';
+import { css, html, LitElement } from 'lit';
+import { property, query, state } from 'lit/decorators.js';
+import { ScopedRegistryHost } from '@lit-labs/scoped-registry-mixin';
+import { requestContext } from '@holochain-open-dev/context';
+
 import { Dialog } from 'scoped-material-components/mwc-dialog';
 import { Button } from 'scoped-material-components/mwc-button';
 import { TextField } from 'scoped-material-components/mwc-textfield';
 import { AdminWebsocket, DnaBundle } from '@holochain/conductor-api';
 import { sharedStyles } from './sharedStyles';
-import { BaseCompositoryService } from './base';
+import { COMPOSITORY_SERVICE_CONTEXT } from '../types/context';
+import { CompositoryService } from '../services/compository-service';
 
-export abstract class InstallDnaDialog extends BaseCompositoryService {
+export class InstallDnaDialog extends ScopedRegistryHost(LitElement) {
   @property({ type: Object })
   dnaBundle!: DnaBundle;
+
+  @requestContext(COMPOSITORY_SERVICE_CONTEXT)
+  _compositoryService!: CompositoryService;
 
   @query('#dialog')
   _dialog!: Dialog;
 
-  @property({ type: String })
+  @state()
   _dnaPath!: string;
 
   open(opened = true) {
@@ -41,7 +49,7 @@ export abstract class InstallDnaDialog extends BaseCompositoryService {
     });
     await adminWs.activateApp({ installed_app_id });
 
-    const cellId = Object.values(result.slots)[0].base_cell_id;
+    const cellId = Object.values(result.cell_data)[0].cell_id;
 
     this.dispatchEvent(
       new CustomEvent('dna-installed', {

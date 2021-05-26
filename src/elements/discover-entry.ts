@@ -1,19 +1,26 @@
-import { html, LitElement, property, PropertyValues, query } from 'lit-element';
+import { css, html, LitElement } from 'lit';
+import { property, query, state } from 'lit/decorators.js';
+import { ScopedRegistryHost } from '@lit-labs/scoped-registry-mixin';
+import { requestContext } from '@holochain-open-dev/context';
+
+import { AdminWebsocket, AppWebsocket, CellId } from '@holochain/conductor-api';
+import { CircularProgress } from 'scoped-material-components/mwc-circular-progress';
+
 import { discoverEntryDetails } from '../processes/discover';
 import { CompositoryScope } from './compository-scope';
 import { fetchLensesForZome } from '../processes/fetch-lenses';
 import { CompositoryService } from '../services/compository-service';
-import { AdminWebsocket, AppWebsocket, CellId } from '@holochain/conductor-api';
-import { CircularProgress } from 'scoped-material-components/mwc-circular-progress';
-import { ScopedElementsMixin as Scoped } from '@open-wc/scoped-elements';
 import { importModuleFromFile } from '../processes/import-module-from-file';
-import { BaseCompositoryService } from './base';
+import { COMPOSITORY_SERVICE_CONTEXT } from '../types/context';
 
-export abstract class DiscoverEntry extends BaseCompositoryService {
+export class DiscoverEntry extends ScopedRegistryHost(LitElement) {
   @property({ type: String })
   entryUri!: string;
 
-  @property({ type: Boolean })
+  @requestContext(COMPOSITORY_SERVICE_CONTEXT)
+  _compositoryService!: CompositoryService;
+
+  @state()
   _loading = true;
 
   @query('#scope')
