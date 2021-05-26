@@ -1,11 +1,14 @@
 import { __decorate } from "tslib";
-import { html, property, query } from 'lit-element';
+import { html, LitElement } from 'lit';
+import { property, query, state } from 'lit/decorators.js';
+import { ScopedRegistryHost } from '@lit-labs/scoped-registry-mixin';
+import { requestContext } from '@holochain-open-dev/context';
 import { Dialog } from 'scoped-material-components/mwc-dialog';
 import { Button } from 'scoped-material-components/mwc-button';
 import { TextField } from 'scoped-material-components/mwc-textfield';
 import { sharedStyles } from './sharedStyles';
-import { BaseCompositoryService } from './base';
-export class InstallDnaDialog extends BaseCompositoryService {
+import { COMPOSITORY_SERVICE_CONTEXT } from '../types/context';
+export class InstallDnaDialog extends ScopedRegistryHost(LitElement) {
     open(opened = true) {
         this._dialog.open = opened;
     }
@@ -27,7 +30,7 @@ export class InstallDnaDialog extends BaseCompositoryService {
             installed_app_id,
         });
         await adminWs.activateApp({ installed_app_id });
-        const cellId = Object.values(result.slots)[0].base_cell_id;
+        const cellId = Object.values(result.cell_data)[0].cell_id;
         this.dispatchEvent(new CustomEvent('dna-installed', {
             detail: { cellId },
             bubbles: true,
@@ -85,9 +88,12 @@ __decorate([
     property({ type: Object })
 ], InstallDnaDialog.prototype, "dnaBundle", void 0);
 __decorate([
+    requestContext(COMPOSITORY_SERVICE_CONTEXT)
+], InstallDnaDialog.prototype, "_compositoryService", void 0);
+__decorate([
     query('#dialog')
 ], InstallDnaDialog.prototype, "_dialog", void 0);
 __decorate([
-    property({ type: String })
+    state()
 ], InstallDnaDialog.prototype, "_dnaPath", void 0);
 //# sourceMappingURL=install-dna-dialog.js.map

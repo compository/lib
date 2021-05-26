@@ -1,3 +1,4 @@
+import { LitElement } from 'lit';
 import { List } from 'scoped-material-components/mwc-list';
 import { Button } from 'scoped-material-components/mwc-button';
 import { CheckListItem } from 'scoped-material-components/mwc-check-list-item';
@@ -10,33 +11,34 @@ import { HoloHashed } from '@holochain-open-dev/core-types';
 import { Card } from 'scoped-material-components/mwc-card';
 import { ZomeDef } from '../types/dnas';
 import { InstallDnaDialog } from './install-dna-dialog';
-import { BaseCompositoryService } from './base';
-export declare abstract class ComposeZomes extends BaseCompositoryService {
+import { CompositoryService } from '../services/compository-service';
+declare const ComposeZomes_base: typeof LitElement;
+export declare class ComposeZomes extends ComposeZomes_base {
     zomeDefs: Array<HoloHashed<ZomeDef>>;
     _installDnaDialog: InstallDnaDialog;
+    /** Dependencies */
+    _compositoryService: CompositoryService;
     _dnaTemplateToClone: string | undefined;
     _selectedIndexes: Set<number>;
     _templateName: string | undefined;
     _generatingBundle: boolean;
-    static get styles(): import("lit-element").CSSResult[];
     firstUpdated(): void;
     loadZomes(): Promise<void>;
     createDnaTemplate(): Promise<void>;
     publishInstantiatedDna(cellId: CellId): Promise<void>;
-    renderErrorSnackbar(): import("lit-element").TemplateResult;
-    render(): import("lit-element").TemplateResult;
-    getScopedElements(): {
+    renderErrorSnackbar(): import("lit-html").TemplateResult<1>;
+    render(): import("lit-html").TemplateResult<1>;
+    static elementDefinitions: {
         'mwc-list': typeof List;
         'mwc-check-list-item': typeof CheckListItem;
         'mwc-circular-progress': typeof CircularProgress;
         'mwc-linear-progress': typeof LinearProgress;
         'mwc-button': typeof Button;
         'mwc-textfield': typeof TextField;
-        'install-dna-dialog': {
-            new (): HTMLElement;
-            prototype: HTMLElement;
-        };
+        'install-dna-dialog': typeof InstallDnaDialog;
         'mwc-card': typeof Card;
         'mwc-snackbar': typeof Snackbar;
     };
+    static get styles(): import("lit").CSSResultGroup[];
 }
+export {};

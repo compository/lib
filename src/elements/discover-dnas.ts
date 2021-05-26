@@ -1,5 +1,8 @@
-import { LitElement, Constructor, css, html, property } from 'lit-element';
-import { ScopedElementsMixin as Scoped } from '@open-wc/scoped-elements';
+import { css, html, LitElement } from 'lit';
+import { property, query, state } from 'lit/decorators.js';
+import { ScopedRegistryHost } from '@lit-labs/scoped-registry-mixin';
+import { requestContext } from '@holochain-open-dev/context';
+
 import { sharedStyles } from './sharedStyles';
 import { Card } from 'scoped-material-components/mwc-card';
 import { List } from 'scoped-material-components/mwc-list';
@@ -14,17 +17,19 @@ import {
 } from '../services/compository-service';
 import { generateDnaBundle } from '../processes/generate-dna-bundle';
 import { InstallDnaDialog } from './install-dna-dialog';
-import { BaseElement } from '@holochain-open-dev/common';
-import { BaseCompositoryService } from './base';
+import { COMPOSITORY_SERVICE_CONTEXT } from '../types/context';
 
-export abstract class DiscoverDnas extends BaseCompositoryService {
-  @property({ type: Boolean })
+export class DiscoverDnas extends ScopedRegistryHost(LitElement) {
+  @requestContext(COMPOSITORY_SERVICE_CONTEXT)
+  _compositoryService!: CompositoryService;
+
+  @state()
   _loading = true;
 
-  @property({ type: Array })
+  @state()
   _allInstantiatedDnasHashes: Array<string> | undefined = undefined;
   // {[instantiated_dna_hash]: DnaTemplate}
-  @property({ type: Array })
+  @state()
   _dnaTemplates: Dictionary<GetTemplateForDnaOutput> = {};
 
   async firstUpdated() {
@@ -75,9 +80,9 @@ export abstract class DiscoverDnas extends BaseCompositoryService {
         template.properties
       );
 
-      const dialog: InstallDnaDialog = this.shadowRoot?.getElementById(
+      const dialog: InstallDnaDialog = (this.shadowRoot?.getElementById(
         'install-dialog'
-      ) as InstallDnaDialog;
+      ) as unknown) as InstallDnaDialog;
       dialog.dnaBundle = dnaBundle;
       dialog.open();
     } catch (e) {
@@ -167,20 +172,13 @@ export abstract class DiscoverDnas extends BaseCompositoryService {
     ];
   }
 
-  getScopedElements() {
-    const compositoryService = this._compositoryService;
-    return {
-      'mwc-card': Card,
-      'mwc-button': Button,
-      'mwc-snackbar': Snackbar,
-      'mwc-list': List,
-      'mwc-circular-progress': CircularProgress,
-      'mwc-list-item': ListItem,
-      'install-dna-dialog': class extends InstallDnaDialog {
-        get _compositoryService() {
-          return compositoryService;
-        }
-      } as typeof HTMLElement,
-    };
-  }
+  static elementDefinitions = {
+    'mwc-card': Card,
+    'mwc-button': Button,
+    'mwc-snackbar': Snackbar,
+    'mwc-list': List,
+    'mwc-circular-progress': CircularProgress,
+    'mwc-list-item': ListItem,
+    'install-dna-dialog': InstallDnaDialog,
+  };
 }

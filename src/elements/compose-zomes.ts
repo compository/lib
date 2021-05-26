@@ -1,12 +1,6 @@
-import {
-  Constructor,
-  css,
-  html,
-  LitElement,
-  property,
-  query,
-} from 'lit-element';
-import { ScopedElementsMixin as Scoped } from '@open-wc/scoped-elements';
+import { css, html, LitElement } from 'lit';
+import { property, query, state } from 'lit/decorators.js';
+import { ScopedRegistryHost } from '@lit-labs/scoped-registry-mixin';
 
 import { List } from 'scoped-material-components/mwc-list';
 import { Button } from 'scoped-material-components/mwc-button';
@@ -27,35 +21,29 @@ import { DnaTemplate, ZomeDef, ZomeDefReference } from '../types/dnas';
 import { InstallDnaDialog } from './install-dna-dialog';
 import { CompositoryService } from '../services/compository-service';
 import { generateDnaBundle } from '../processes/generate-dna-bundle';
-import { BaseElement } from '@holochain-open-dev/common';
-import { BaseCompositoryService } from './base';
+import { requestContext } from '@holochain-open-dev/context';
+import { COMPOSITORY_SERVICE_CONTEXT } from '../types/context';
 
-export abstract class ComposeZomes extends BaseCompositoryService {
+export class ComposeZomes extends ScopedRegistryHost(LitElement) {
   @property()
   zomeDefs!: Array<HoloHashed<ZomeDef>>;
 
   @query('#install-dna-dialog')
   _installDnaDialog!: InstallDnaDialog;
 
+  /** Dependencies */
+
+  @requestContext(COMPOSITORY_SERVICE_CONTEXT)
+  _compositoryService!: CompositoryService;
+
   _dnaTemplateToClone: string | undefined = undefined;
 
   _selectedIndexes: Set<number> = new Set();
-  @property()
+  @state()
   _templateName: string | undefined = undefined;
 
-  @property({ type: Boolean })
+  @state()
   _generatingBundle = false;
-
-  static get styles() {
-    return [
-      sharedStyles,
-      css`
-        :host {
-          display: flex;
-        }
-      `,
-    ];
-  }
 
   firstUpdated() {
     this.loadZomes();
@@ -182,30 +170,32 @@ export abstract class ComposeZomes extends BaseCompositoryService {
             ></mwc-button>
           </div>
         </div>
-            ${this._generatingBundle
-              ? html`
-                  <mwc-linear-progress indeterminate></mwc-linear-progress>
-                `
-              : html``}
+        ${this._generatingBundle
+          ? html` <mwc-linear-progress indeterminate></mwc-linear-progress> `
+          : html``}
       </mwc-card>`;
   }
 
-  getScopedElements() {
-    const compositoryService = this._compositoryService;
-    return {
-      'mwc-list': List,
-      'mwc-check-list-item': CheckListItem,
-      'mwc-circular-progress': CircularProgress,
-      'mwc-linear-progress': LinearProgress,
-      'mwc-button': Button,
-      'mwc-textfield': TextField,
-      'install-dna-dialog': class extends InstallDnaDialog {
-        get _compositoryService() {
-          return compositoryService;
+  static elementDefinitions = {
+    'mwc-list': List,
+    'mwc-check-list-item': CheckListItem,
+    'mwc-circular-progress': CircularProgress,
+    'mwc-linear-progress': LinearProgress,
+    'mwc-button': Button,
+    'mwc-textfield': TextField,
+    'install-dna-dialog': InstallDnaDialog,
+    'mwc-card': Card,
+    'mwc-snackbar': Snackbar,
+  };
+
+  static get styles() {
+    return [
+      sharedStyles,
+      css`
+        :host {
+          display: flex;
         }
-      } as typeof HTMLElement,
-      'mwc-card': Card,
-      'mwc-snackbar': Snackbar,
-    };
+      `,
+    ];
   }
 }

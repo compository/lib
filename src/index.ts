@@ -1,4 +1,5 @@
-export * from './elements/base';
+import '@webcomponents/scoped-custom-element-registry';
+
 export * from './elements/compose-zomes';
 export * from './elements/publish-zome';
 export * from './elements/discover-dnas';
@@ -8,6 +9,7 @@ export * from './elements/compository-scope';
 export * from './elements/install-dna-dialog';
 export * from './services/compository-service';
 export * from './types/lenses';
+export * from './types/context';
 export * from './types/dnas';
 export * from './processes/discover';
 export * from './processes/fetch-lenses';

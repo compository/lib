@@ -1,5 +1,8 @@
 import { __decorate } from "tslib";
-import { css, html, property } from 'lit-element';
+import { css, html, LitElement } from 'lit';
+import { state } from 'lit/decorators.js';
+import { ScopedRegistryHost } from '@lit-labs/scoped-registry-mixin';
+import { requestContext } from '@holochain-open-dev/context';
 import { sharedStyles } from './sharedStyles';
 import { Card } from 'scoped-material-components/mwc-card';
 import { List } from 'scoped-material-components/mwc-list';
@@ -10,8 +13,8 @@ import { Button } from 'scoped-material-components/mwc-button';
 import { Snackbar } from 'scoped-material-components/mwc-snackbar';
 import { generateDnaBundle } from '../processes/generate-dna-bundle';
 import { InstallDnaDialog } from './install-dna-dialog';
-import { BaseCompositoryService } from './base';
-export class DiscoverDnas extends BaseCompositoryService {
+import { COMPOSITORY_SERVICE_CONTEXT } from '../types/context';
+export class DiscoverDnas extends ScopedRegistryHost(LitElement) {
     constructor() {
         super(...arguments);
         this._loading = true;
@@ -135,30 +138,26 @@ export class DiscoverDnas extends BaseCompositoryService {
       `,
         ];
     }
-    getScopedElements() {
-        const compositoryService = this._compositoryService;
-        return {
-            'mwc-card': Card,
-            'mwc-button': Button,
-            'mwc-snackbar': Snackbar,
-            'mwc-list': List,
-            'mwc-circular-progress': CircularProgress,
-            'mwc-list-item': ListItem,
-            'install-dna-dialog': class extends InstallDnaDialog {
-                get _compositoryService() {
-                    return compositoryService;
-                }
-            },
-        };
-    }
 }
+DiscoverDnas.elementDefinitions = {
+    'mwc-card': Card,
+    'mwc-button': Button,
+    'mwc-snackbar': Snackbar,
+    'mwc-list': List,
+    'mwc-circular-progress': CircularProgress,
+    'mwc-list-item': ListItem,
+    'install-dna-dialog': InstallDnaDialog,
+};
 __decorate([
-    property({ type: Boolean })
+    requestContext(COMPOSITORY_SERVICE_CONTEXT)
+], DiscoverDnas.prototype, "_compositoryService", void 0);
+__decorate([
+    state()
 ], DiscoverDnas.prototype, "_loading", void 0);
 __decorate([
-    property({ type: Array })
+    state()
 ], DiscoverDnas.prototype, "_allInstantiatedDnasHashes", void 0);
 __decorate([
-    property({ type: Array })
+    state()
 ], DiscoverDnas.prototype, "_dnaTemplates", void 0);
 //# sourceMappingURL=discover-dnas.js.map

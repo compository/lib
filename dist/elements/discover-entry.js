@@ -1,11 +1,14 @@
 import { __decorate } from "tslib";
-import { html, property, query } from 'lit-element';
+import { html, LitElement } from 'lit';
+import { property, query, state } from 'lit/decorators.js';
+import { ScopedRegistryHost } from '@lit-labs/scoped-registry-mixin';
+import { requestContext } from '@holochain-open-dev/context';
+import { CircularProgress } from 'scoped-material-components/mwc-circular-progress';
 import { discoverEntryDetails } from '../processes/discover';
 import { fetchLensesForZome } from '../processes/fetch-lenses';
-import { CircularProgress } from 'scoped-material-components/mwc-circular-progress';
 import { importModuleFromFile } from '../processes/import-module-from-file';
-import { BaseCompositoryService } from './base';
-export class DiscoverEntry extends BaseCompositoryService {
+import { COMPOSITORY_SERVICE_CONTEXT } from '../types/context';
+export class DiscoverEntry extends ScopedRegistryHost(LitElement) {
     constructor() {
         super(...arguments);
         this._loading = true;
@@ -38,7 +41,10 @@ __decorate([
     property({ type: String })
 ], DiscoverEntry.prototype, "entryUri", void 0);
 __decorate([
-    property({ type: Boolean })
+    requestContext(COMPOSITORY_SERVICE_CONTEXT)
+], DiscoverEntry.prototype, "_compositoryService", void 0);
+__decorate([
+    state()
 ], DiscoverEntry.prototype, "_loading", void 0);
 __decorate([
     query('#scope')

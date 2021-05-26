@@ -1,13 +1,16 @@
 import { __decorate } from "tslib";
+import { html, LitElement } from 'lit';
+import { state } from 'lit/decorators.js';
+import { ScopedRegistryHost } from '@lit-labs/scoped-registry-mixin';
+import { requestContext } from '@holochain-open-dev/context';
 import { serializeHash } from '@holochain-open-dev/core-types';
-import { html, property, } from 'lit-element';
 import { Card } from 'scoped-material-components/mwc-card';
 import { CircularProgress } from 'scoped-material-components/mwc-circular-progress';
 import { List } from 'scoped-material-components/mwc-list';
 import { ListItem } from 'scoped-material-components/mwc-list-item';
-import { BaseCompositoryService } from './base';
 import { sharedStyles } from './sharedStyles';
-export class InstalledCells extends BaseCompositoryService {
+import { COMPOSITORY_SERVICE_CONTEXT } from '../types/context';
+export class InstalledCells extends ScopedRegistryHost(LitElement) {
     constructor() {
         super(...arguments);
         this._dnaTemplateNames = {};
@@ -110,6 +113,9 @@ export class InstalledCells extends BaseCompositoryService {
     }
 }
 __decorate([
-    property({ type: Array })
+    requestContext(COMPOSITORY_SERVICE_CONTEXT)
+], InstalledCells.prototype, "_compositoryService", void 0);
+__decorate([
+    state()
 ], InstalledCells.prototype, "_installedCellIds", void 0);
 //# sourceMappingURL=installed-cells.js.map

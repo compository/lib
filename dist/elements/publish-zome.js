@@ -1,14 +1,17 @@
 import { __decorate } from "tslib";
-import { html, property, query } from 'lit-element';
-import { importModuleFromFile } from '../processes/import-module-from-file';
-import { sharedStyles } from './sharedStyles';
+import { html, LitElement } from 'lit';
+import { query, state } from 'lit/decorators.js';
+import { ScopedRegistryHost } from '@lit-labs/scoped-registry-mixin';
+import { requestContext } from '@holochain-open-dev/context';
 import { TextField } from 'scoped-material-components/mwc-textfield';
 import { UploadFiles } from '@holochain-open-dev/file-storage';
-import { BaseElement } from '@holochain-open-dev/common';
 import { Card } from 'scoped-material-components/mwc-card';
 import { Button } from 'scoped-material-components/mwc-button';
 import { Snackbar } from 'scoped-material-components/mwc-snackbar';
-export class PublishZome extends BaseElement {
+import { importModuleFromFile } from '../processes/import-module-from-file';
+import { sharedStyles } from './sharedStyles';
+import { COMPOSITORY_SERVICE_CONTEXT } from '../types/context';
+export class PublishZome extends ScopedRegistryHost(LitElement) {
     constructor() {
         super(...arguments);
         this._zomeWasmHash = undefined;
@@ -109,31 +112,27 @@ export class PublishZome extends BaseElement {
       </mwc-card>
     `;
     }
-    getScopedElements() {
-        const compositoryService = this._compositoryService;
-        return {
-            'mwc-textfield': TextField,
-            'mwc-button': Button,
-            'mwc-card': Card,
-            'mwc-snackbar': Snackbar,
-            'upload-files': class extends UploadFiles {
-                get _fileStorageService() {
-                    return compositoryService;
-                }
-            },
-        };
-    }
     static get styles() {
         return sharedStyles;
     }
 }
+PublishZome.elementDefinitions = {
+    'mwc-textfield': TextField,
+    'mwc-button': Button,
+    'mwc-card': Card,
+    'mwc-snackbar': Snackbar,
+    'upload-files': UploadFiles,
+};
+__decorate([
+    requestContext(COMPOSITORY_SERVICE_CONTEXT)
+], PublishZome.prototype, "_compositoryService", void 0);
 __decorate([
     query('#zome-name')
 ], PublishZome.prototype, "_nameField", void 0);
 __decorate([
-    property({ type: String })
+    state()
 ], PublishZome.prototype, "_zomeWasmHash", void 0);
 __decorate([
-    property({ type: Boolean })
+    state()
 ], PublishZome.prototype, "_invalidUiBundle", void 0);
 //# sourceMappingURL=publish-zome.js.map

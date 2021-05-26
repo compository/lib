@@ -1,13 +1,10 @@
-import { Dictionary, serializeHash } from '@holochain-open-dev/core-types';
+import { css, html, LitElement } from 'lit';
+import { property, query, state } from 'lit/decorators.js';
+import { ScopedRegistryHost } from '@lit-labs/scoped-registry-mixin';
+import { requestContext } from '@holochain-open-dev/context';
+
 import { CellId, AdminWebsocket, AppWebsocket } from '@holochain/conductor-api';
-import { ScopedElementsMixin as Scoped } from '@open-wc/scoped-elements';
-import {
-  Constructor,
-  html,
-  LitElement,
-  property,
-  PropertyValues,
-} from 'lit-element';
+import { Dictionary, serializeHash } from '@holochain-open-dev/core-types';
 import { Card } from 'scoped-material-components/mwc-card';
 import { CircularProgress } from 'scoped-material-components/mwc-circular-progress';
 import { List } from 'scoped-material-components/mwc-list';
@@ -16,12 +13,16 @@ import {
   CompositoryService,
   GetTemplateForDnaOutput,
 } from '../services/compository-service';
-import { BaseCompositoryService } from './base';
 
 import { sharedStyles } from './sharedStyles';
+import { COMPOSITORY_SERVICE_CONTEXT } from '../types/context';
 
-export abstract class InstalledCells extends BaseCompositoryService {
-  @property({ type: Array })
+export class InstalledCells extends ScopedRegistryHost(LitElement) {
+
+  @requestContext(COMPOSITORY_SERVICE_CONTEXT)
+  _compositoryService!: CompositoryService;
+
+  @state()
   _installedCellIds!: Array<CellId>;
 
   _dnaTemplateNames: Dictionary<string> = {};

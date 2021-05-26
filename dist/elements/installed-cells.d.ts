@@ -1,11 +1,14 @@
-import { Dictionary } from '@holochain-open-dev/core-types';
+import { LitElement } from 'lit';
 import { CellId } from '@holochain/conductor-api';
+import { Dictionary } from '@holochain-open-dev/core-types';
 import { Card } from 'scoped-material-components/mwc-card';
 import { CircularProgress } from 'scoped-material-components/mwc-circular-progress';
 import { List } from 'scoped-material-components/mwc-list';
 import { ListItem } from 'scoped-material-components/mwc-list-item';
-import { BaseCompositoryService } from './base';
-export declare abstract class InstalledCells extends BaseCompositoryService {
+import { CompositoryService } from '../services/compository-service';
+declare const InstalledCells_base: typeof LitElement;
+export declare class InstalledCells extends InstalledCells_base {
+    _compositoryService: CompositoryService;
     _installedCellIds: Array<CellId>;
     _dnaTemplateNames: Dictionary<string>;
     firstUpdated(): void;
@@ -13,8 +16,8 @@ export declare abstract class InstalledCells extends BaseCompositoryService {
     loadCellsIds(): Promise<void>;
     fetchDnaTemplateNames(instantiatedDnaHashes: string[]): Promise<Dictionary<string>>;
     getNonCompositoryCellIds(): CellId[];
-    render(): import("lit-element").TemplateResult;
-    static get styles(): import("lit-element").CSSResult;
+    render(): import("lit-html").TemplateResult<1>;
+    static get styles(): import("lit").CSSResultGroup;
     static get scopedElements(): {
         'mwc-list': typeof List;
         'mwc-list-item': typeof ListItem;
@@ -22,3 +25,4 @@ export declare abstract class InstalledCells extends BaseCompositoryService {
         'mwc-circular-progress': typeof CircularProgress;
     };
 }
+export {};
